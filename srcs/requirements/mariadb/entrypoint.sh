@@ -1,19 +1,23 @@
 #!/bin/bash
-sudo systemctl start mariadb
-sudo mysql_secure_installation -y
-sudo mariadb
 
-CREATE DATABASE	wpdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'bfitte'@'localhost' IDENTIFIED BY 'truc'
-CREATE USER 'chef'@'localhost' IDENTIFIED BY 'truc2'
-GRANT ALL PRIVILEGES ON appdb.* TO 'chef'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
+DATADIR="/var/lib/mysql"
 
-sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
-bind-adress = 0.0.0.0
-port = 3306
-sudo systemctl restart mariadb
-sudo ufw allow 3306/tcp
+if [ ! -d "$DATADIR/mysql" ]; then
 
+    mysql_install_db --user=mysql --datadir=$DATADIR
 
+    mysqld_safe --datadir=$DATADIR &
+    
+    sleep 5 
+
+    mariadb -e "CREATE DATABASE IF NOT EXISTS \`wpdb\`;"
+    mariadb -e "CREATE USER IF NOT EXISTS 'chef'@'%' IDENTIFIED BY 'truc2';"
+    mariadb -e "GRANT ALL PRIVILEGES ON \`wpdb\`.* TO 'chef'@'%';"
+    mariadb -e "FLUSH PRIVILEGES;"
+
+    mariadb -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'mot_de_passe_root';"
+
+    mysqladmin -u root -p'mot_de_passe_root' shutdown
+fi
+
+exec mysqld_safe --datadir=$DATADIR
