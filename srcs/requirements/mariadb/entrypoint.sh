@@ -2,22 +2,24 @@
 
 DATADIR="/var/lib/mysql"
 
+# If the folder already exists, all database system already exists
 if [ ! -d "$DATADIR/mysql" ]; then
 
-    mysql_install_db --user=mysql --datadir=$DATADIR
+    mariadb-install-db --user=mysql --datadir=$DATADIR
 
-    mysqld_safe --datadir=$DATADIR &
+    mariadbd-safe --datadir=$DATADIR &
     
     sleep 5 
 
-    mariadb -e "CREATE DATABASE IF NOT EXISTS \`wpdb\`;"
-    mariadb -e "CREATE USER IF NOT EXISTS 'chef'@'%' IDENTIFIED BY 'truc2';"
-    mariadb -e "GRANT ALL PRIVILEGES ON \`wpdb\`.* TO 'chef'@'%';"
+    mariadb -e "CREATE DATABASE IF NOT EXISTS \`${SQL_DATABASE}\`;"
+    mariadb -e "CREATE USER IF NOT EXISTS '${SQL_USER}'@'%' IDENTIFIED BY '${SQL_PASSWORD}';"
+    mariadb -e "GRANT ALL PRIVILEGES ON \`${SQL_DATABASE}\`.* TO '${SQL_USER}'@'%';"
     mariadb -e "FLUSH PRIVILEGES;"
 
-    mariadb -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'mot_de_passe_root';"
+    mariadb -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${SQL_ROOT_PASSWORD}';"
 
-    mysqladmin -u root -p'mot_de_passe_root' shutdown
+    # mariadb-admin is an administration program for the mariadbd daemon.
+    mariadb-admin -u root -p"${SQL_ROOT_PASSWORD}" shutdown
 fi
 
-exec mysqld_safe --datadir=$DATADIR
+exec mariadbd --user=mysql --datadir=$DATADIR
