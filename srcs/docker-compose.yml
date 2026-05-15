@@ -19,7 +19,11 @@ services:
       - sql_root_password
       - sql_password
     volumes:
-      - mariadb_vol:/var/lib/mysql
+      - type: volume
+        source: mariadb_vol
+        target: /var/lib/mysql
+        volume:
+          nocopy: true
 
   wordpress:
     build:

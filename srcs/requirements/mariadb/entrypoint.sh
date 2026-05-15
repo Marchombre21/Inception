@@ -9,11 +9,6 @@ chown -R mysql:mysql /run/mysqld
 
 # If the folder already exists, all database system already exists
 if [ ! -d "${DATADIR}/mysql" ]; then
-    TRUC=0
-    until [ $TRUC -gt 10 ]; do
-        echo "BRUNOI"
-        ((TRUC++))
-    done
 
     mariadb-install-db --user=mysql --datadir=$DATADIR
 
@@ -24,8 +19,8 @@ if [ ! -d "${DATADIR}/mysql" ]; then
     done
 
     mariadb -e "CREATE DATABASE IF NOT EXISTS \`${SQL_DATABASE}\`;"
-    mariadb -e "CREATE USER IF NOT EXISTS '${SQL_USER_NAME}'@'wordpress' IDENTIFIED BY '${SQL_PASSWORD}';"
-    mariadb -e "GRANT ALL PRIVILEGES ON \`${SQL_DATABASE}\`.* TO '${SQL_USER_NAME}'@'wordpress';"
+    mariadb -e "CREATE USER IF NOT EXISTS '${SQL_USER_NAME}'@'%' IDENTIFIED BY '${SQL_PASSWORD}';"
+    mariadb -e "GRANT ALL PRIVILEGES ON \`${SQL_DATABASE}\`.* TO '${SQL_USER_NAME}'@'%';"
     # Privileges MAJ
     mariadb -e "FLUSH PRIVILEGES;"
 
