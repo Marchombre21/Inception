@@ -27,4 +27,9 @@ rmc:
 rmi:
 	docker image prune -a
 
-.PHONY: all wp mdb down stop rmc rmi
+retest:
+	$(CMD) -f $(SRC_CMP) down -v
+	sudo rm -rf ../data/mariadb/
+	sudo rm -rf ../data/wordpress/
+
+.PHONY: all wp mdb down stop rmc rmi retest

@@ -31,6 +31,6 @@ fi
 # The run directory is deleted every time the system is restarted (security)
 # FPM is writing its PID file and its socket file in it so we have to recreate it.
 mkdir -p /run/php
-chown $WP_ADMIN_NAME:$WP_ADMIN_NAME /run/php
+chown www-data:www-data /run/php
 
 exec php-fpm8.2 -F

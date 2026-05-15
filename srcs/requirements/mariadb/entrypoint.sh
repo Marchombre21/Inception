@@ -4,18 +4,28 @@ SQL_PASSWORD=$(cat $SQL_PASSWORD_PATH)
 SQL_ROOT_PASSWORD=$(cat $SQL_ROOT_PASSWORD_PATH)
 DATADIR="/var/lib/mysql"
 
+mkdir -p /run/mysqld
+chown -R mysql:mysql /run/mysqld
+
 # If the folder already exists, all database system already exists
-if [ ! -d "$DATADIR/mysql" ]; then
+if [ ! -d "${DATADIR}/mysql" ]; then
+    TRUC=0
+    until [ $TRUC -gt 10 ]; do
+        echo "BRUNOI"
+        ((TRUC++))
+    done
 
     mariadb-install-db --user=mysql --datadir=$DATADIR
 
     mariadbd-safe --datadir=$DATADIR &
     
-    sleep 5
+    until mariadb-admin ping >/dev/null 2>&1; do
+        sleep 1
+    done
 
     mariadb -e "CREATE DATABASE IF NOT EXISTS \`${SQL_DATABASE}\`;"
-    mariadb -e "CREATE USER IF NOT EXISTS '${SQL_USER_NAME}'@'%' IDENTIFIED BY '${SQL_PASSWORD}';"
-    mariadb -e "GRANT ALL PRIVILEGES ON \`${SQL_DATABASE}\`.* TO '${SQL_USER_NAME}'@'%';"
+    mariadb -e "CREATE USER IF NOT EXISTS '${SQL_USER_NAME}'@'wordpress' IDENTIFIED BY '${SQL_PASSWORD}';"
+    mariadb -e "GRANT ALL PRIVILEGES ON \`${SQL_DATABASE}\`.* TO '${SQL_USER_NAME}'@'wordpress';"
     # Privileges MAJ
     mariadb -e "FLUSH PRIVILEGES;"
 
@@ -27,7 +37,5 @@ if [ ! -d "$DATADIR/mysql" ]; then
     mariadb-admin -u root -p"${SQL_ROOT_PASSWORD}" shutdown
 fi
 
-mkdir -p /run/mysqld
-chown -R mysql:mysql /run/mysqld
 
 exec mariadbd --user=mysql --datadir=$DATADIR
