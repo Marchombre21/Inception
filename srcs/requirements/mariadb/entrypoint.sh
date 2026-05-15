@@ -27,4 +27,7 @@ if [ ! -d "$DATADIR/mysql" ]; then
     mariadb-admin -u root -p"${SQL_ROOT_PASSWORD}" shutdown
 fi
 
+mkdir -p /run/mysqld
+chown -R mysql:mysql /run/mysqld
+
 exec mariadbd --user=mysql --datadir=$DATADIR
