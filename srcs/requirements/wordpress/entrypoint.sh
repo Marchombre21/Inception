@@ -26,11 +26,13 @@ if [ ! -f wp-config.php ]; then
 		--allow-root
 
 	wp user create $WP_USER_NAME $WP_USER_MAIL --user_pass=$WP_USER_PASSWORD --role=author --allow-root
+	wp config set DISABLE_WP_CRON true --raw --allow-root
 fi
 
 # The run directory is deleted every time the system is restarted (security)
 # FPM is writing its PID file and its socket file in it so we have to recreate it.
 mkdir -p /run/php
 chown www-data:www-data /run/php
+chown -R www-data:www-data /var/www/html
 
 exec php-fpm8.2 -F
