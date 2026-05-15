@@ -1,16 +1,20 @@
 #!/bin/bash 
 
+SQL_PASSWORD=$(cat $SQL_PASSWORD_PATH)
+WP_ADMIN_PASSWORD= $(cat $WP_ADMIN_PASSWORD_FILE)
+WP_USER_PASSWORD= $(cat $WP_USER_PASSWORD_FILE)
+
 cd  /var/www/html
 
 if [ ! -f wp-config.php ]; then
 
-	wp core download --skip-content --allow-root
+	wp core download --allow-root
 
 	wp config create \
 		--dbname=$SQL_DATABASE \
 		--dbuser=$SQL_USER_NAME \
 		--dbpass=$SQL_PASSWORD \
-		--dbhost=mariadb \
+		--dbhost=$WP_DB_HOST \
 		--allow-root
 
 	wp core install \
@@ -18,7 +22,7 @@ if [ ! -f wp-config.php ]; then
 		--title=$DOMAIN_NAME \
 		--admin_user=$WP_ADMIN_NAME \
 		--admin_password=$WP_ADMIN_PASSWORD \
-		--admin_email=$WP_ADMIN_EMAIL \
+		--admin_email=$WP_ADMIN_MAIL \
 		--allow-root
 
 	wp user create $WP_USER_NAME $WP_USER_MAIL --user_pass=$WP_USER_PASSWORD --role=author --allow-root

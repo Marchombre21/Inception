@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SQL_PASSWORD=$(cat $SQL_PASSWORD_PATH)
+SQL_ROOT_PASSWORD=$(cat $SQL_ROOT_PASSWORD_PATH)
 DATADIR="/var/lib/mysql"
 
 # If the folder already exists, all database system already exists
@@ -12,8 +14,8 @@ if [ ! -d "$DATADIR/mysql" ]; then
     sleep 5 
 
     mariadb -e "CREATE DATABASE IF NOT EXISTS \`${SQL_DATABASE}\`;"
-    mariadb -e "CREATE USER IF NOT EXISTS '${SQL_USER}'@'%' IDENTIFIED BY '${SQL_PASSWORD}';"
-    mariadb -e "GRANT ALL PRIVILEGES ON \`${SQL_DATABASE}\`.* TO '${SQL_USER}'@'%';"
+    mariadb -e "CREATE USER IF NOT EXISTS '${SQL_USER_NAME}'@'%' IDENTIFIED BY '${SQL_PASSWORD}';"
+    mariadb -e "GRANT ALL PRIVILEGES ON \`${SQL_DATABASE}\`.* TO '${SQL_USER_NAME}'@'%';"
     # Privileges MAJ
     mariadb -e "FLUSH PRIVILEGES;"
 

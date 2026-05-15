@@ -1,35 +1,75 @@
 services:
-  db:
-    image: mysql:8.0
+  mariadb:
+    build:
+      context: ./requirements/mariadb
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -u root -p$$(cat /run/secrets/sql_root_password)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+      - SQL_DATABASE
+      - SQL_USER_NAME
+      - SQL_PASSWORD_PATH=/run/secrets/sql_password
+      - SQL_ROOT_PASSWORD_PATH=/run/secrets/sql_root_password
     secrets:
-      - db_root_password
-      - db_password
+      - sql_root_password
+      - sql_password
     volumes:
-      - db_data:/var/lib/mysql
+      - mariadb_vol:/var/lib/mysql
 
   wordpress:
-    image: wordpress:latest
+    build:
+      context: ./requirements/wordpress
     depends_on:
-      - db
-    ports:
-      - "8080:80"
+      mariadb:
+        condition: service_healthy
     environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password
+      - WP_USER_NAME
+      - WP_USER_MAIL
+      - URL_SITE
+      - DOMAIN_NAME
+      - WP_ADMIN_NAME
+      - WP_ADMIN_MAIL
+      - SQL_DATABASE
+      - SQL_USER_NAME
+      - WP_DB_HOST=mariadb:3306
+      - SQL_PASSWORD_PATH=/run/secrets/sql_password
+      - WP_ADMIN_PASSWORD_FILE=/run/secrets/wp_admin_password
+      - WP_USER_PASSWORD_FILE=/run/secrets/wp_user_password
     secrets:
-      - db_password
+      - sql_password
+      - wp_admin_password
+      - wp_user_password
+    volumes:
+      - wordpress_vol:/var/www/html
+
+  nginx:
+    build:
+      context: ./requirements/nginx
+    volumes:
+      - wordpress_vol:/var/www/html
 
 secrets:
-  db_password:
-    file: ./secrets/db_password.txt
-  db_root_password:
-    file: ./secrets/db_root_password.txt
+  sql_password:
+    file: ../secrets/sql_password.txt
+  wp_admin_password:
+    file: ../secrets/wp_admin_password.txt
+  wp_user_password:
+    file: ../secrets/wp_user_password.txt
+  sql_root_password:
+    file: ../secrets/sql_root_password.txt
 
 volumes:
-  db_data:
+  wordpress_vol:
+    driver: local
+    driver_opts:
+        type: none
+        o: bind
+        device: /home/bfitte/data/wordpress
+  mariadb_vol:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/bfitte/data/mariadb
