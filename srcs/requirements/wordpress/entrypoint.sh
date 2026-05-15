@@ -1,8 +1,8 @@
 #!/bin/bash 
 
 SQL_PASSWORD=$(cat $SQL_PASSWORD_PATH)
-WP_ADMIN_PASSWORD= $(cat $WP_ADMIN_PASSWORD_FILE)
-WP_USER_PASSWORD= $(cat $WP_USER_PASSWORD_FILE)
+WP_ADMIN_PASSWORD=$(cat $WP_ADMIN_PASSWORD_FILE)
+WP_USER_PASSWORD=$(cat $WP_USER_PASSWORD_FILE)
 
 cd  /var/www/html
 
@@ -31,5 +31,6 @@ fi
 # The run directory is deleted every time the system is restarted (security)
 # FPM is writing its PID file and its socket file in it so we have to recreate it.
 mkdir -p /run/php
+chown $WP_ADMIN_NAME:$WP_ADMIN_NAME /run/php
 
 exec php-fpm8.2 -F

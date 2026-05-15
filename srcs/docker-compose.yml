@@ -2,6 +2,9 @@ services:
   mariadb:
     build:
       context: ./requirements/mariadb
+    networks:
+      - my_network
+    restart: on-failure
     healthcheck:
       test: ["CMD-SHELL", "mariadb-admin ping -u root -p$$(cat /run/secrets/sql_root_password)"]
       interval: 10s
@@ -21,6 +24,9 @@ services:
   wordpress:
     build:
       context: ./requirements/wordpress
+    networks:
+      - my_network
+    restart: on-failure
     depends_on:
       mariadb:
         condition: service_healthy
@@ -47,6 +53,11 @@ services:
   nginx:
     build:
       context: ./requirements/nginx
+    networks:
+      - my_network
+    restart: on-failure
+    ports:
+      - "443:443"
     volumes:
       - wordpress_vol:/var/www/html
 
@@ -73,3 +84,8 @@ volumes:
       type: none
       o: bind
       device: /home/bfitte/data/mariadb
+
+networks:
+  my_network:
+    driver: bridge
+    name: Inception_network

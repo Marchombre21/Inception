@@ -1,5 +1,13 @@
+SRC_CMP := srcs/docker-compose.yml
+
+CMD := docker compose
+
+
 all: wp mdb
-	docker compose -f srcs/docker-compose.yml up -d
+	$(CMD) -f $(SRC_CMP) up -d
+
+re:
+	$(CMD) -f $(SRC_CMP) up --build -d
 
 wp:
 	mkdir -p /home/bfitte/data/wordpress
@@ -7,4 +15,16 @@ wp:
 mdb:
 	mkdir -p /home/bfitte/data/mariadb
 
-.PHONY: all wp mdb
+down:
+	$(CMD) -f $(SRC_CMP) down
+
+stop:
+	$(CMD) -f $(SRC_CMP) stop
+
+rmc:
+	docker rm $(docker ps -a -q)
+
+rmi:
+	docker image prune -a
+
+.PHONY: all wp mdb down stop rmc rmi

@@ -11,7 +11,7 @@ if [ ! -d "$DATADIR/mysql" ]; then
 
     mariadbd-safe --datadir=$DATADIR &
     
-    sleep 5 
+    sleep 5
 
     mariadb -e "CREATE DATABASE IF NOT EXISTS \`${SQL_DATABASE}\`;"
     mariadb -e "CREATE USER IF NOT EXISTS '${SQL_USER_NAME}'@'%' IDENTIFIED BY '${SQL_PASSWORD}';"
