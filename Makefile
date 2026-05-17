@@ -2,7 +2,6 @@ SRC_CMP := srcs/docker-compose.yml
 
 CMD := docker compose
 
-
 all: wp mdb
 	$(CMD) -f $(SRC_CMP) up -d
 
@@ -10,10 +9,10 @@ re:
 	$(CMD) -f $(SRC_CMP) up --build -d
 
 wp:
-	mkdir -p /home/bfitte/data/wordpress
+	mkdir -p /home/bruno/data/wordpress
 
 mdb:
-	mkdir -p /home/bfitte/data/mariadb
+	mkdir -p /home/bruno/data/mariadb
 
 down:
 	$(CMD) -f $(SRC_CMP) down
