@@ -6,6 +6,11 @@ WP_USER_PASSWORD=$(cat $WP_USER_PASSWORD_FILE)
 
 cd  /var/www/html
 
+if [[ "${WP_ADMIN_NAME,,}" == *"admin"* ]]; then \
+	echo "You can't have the word 'admin' in your admin name."; \
+	exit 1; \
+fi	
+
 if [ ! -f wp-config.php ]; then
 
 	wp core download --allow-root
