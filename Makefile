@@ -17,10 +17,10 @@ re:
 	$(CMD) -f $(SRC_CMP) up --build -d
 
 wp:
-	@mkdir -p /home/bruno/data/wordpress
+	@mkdir -p /home/bfitte/data/wordpress
 
 mdb:
-	@mkdir -p /home/bruno/data/mariadb
+	@mkdir -p /home/bfitte/data/mariadb
 
 down:
 	$(CMD) -f $(SRC_CMP) down
