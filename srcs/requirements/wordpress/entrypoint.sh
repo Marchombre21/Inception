@@ -28,9 +28,12 @@ if [ ! -f wp-config.php ]; then
 		--admin_user=$WP_ADMIN_NAME \
 		--admin_password=$WP_ADMIN_PASSWORD \
 		--admin_email=$WP_ADMIN_MAIL \
+		--skip-email \
 		--allow-root
 
 	wp user create $WP_USER_NAME $WP_USER_MAIL --user_pass=$WP_USER_PASSWORD --role=author --allow-root
+	wp config set DISABLE_WP_CRON true --raw --allow-root
+	wp config set WP_HTTP_BLOCK_EXTERNAL true --raw --allow-root
 fi
 
 # The run directory is deleted every time the system is restarted (security)

@@ -13,7 +13,7 @@ all: wp mdb
 	fi
 	$(CMD) -f $(SRC_CMP) up -d
 
-re:
+re: wp mdb
 	$(CMD) -f $(SRC_CMP) up --build -d
 
 wp:
